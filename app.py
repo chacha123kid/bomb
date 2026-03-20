@@ -331,6 +331,7 @@ def sse(room_code, sub_id):
     def generate():
         try:
             yield 'data: {"type":"connected"}\n\n'
+            last_ping = time.time()
             while True:
                 with sse_lock:
                     q = sse_subs.get(room_code, {}).get(sub_id)
@@ -338,6 +339,10 @@ def sse(room_code, sub_id):
                     msgs, q[:] = q[:], []
                 for m in msgs:
                     yield f'data: {m}\n\n'
+                # keepalive comment every 20s to prevent proxy buffering
+                if time.time() - last_ping > 20:
+                    yield ': ping\n\n'
+                    last_ping = time.time()
                 time.sleep(0.04)
         finally:
             with sse_lock:

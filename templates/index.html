@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>WORD BOMB 💣</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body class="home-page">
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <main class="home-wrap">
+    <div class="logo-wrap">
+      <span class="logo-bomb">💣</span>
+      <h1 class="logo-title">WORD<span class="accent">BOMB</span></h1>
+      <p class="logo-sub">Type fast. Don't explode.</p>
+    </div>
+
+    {% if error %}<div class="error-banner">⚠ {{ error }}</div>{% endif %}
+
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="create">CREATE ROOM</button>
+        <button class="tab-btn"        data-tab="join">JOIN ROOM</button>
+      </div>
+
+      <div class="tab-pane active" id="tab-create">
+        <div class="field">
+          <label class="field-label">YOUR NAME</label>
+          <input id="createName" type="text" class="field-input" placeholder="Enter your name…" maxlength="20" autocomplete="off"/>
+        </div>
+        <button id="createBtn" class="btn btn-primary btn-lg">
+          <span>💣</span> CREATE GAME
+        </button>
+      </div>
+
+      <div class="tab-pane" id="tab-join">
+        <div class="field">
+          <label class="field-label">YOUR NAME</label>
+          <input id="joinName" type="text" class="field-input" placeholder="Enter your name…" maxlength="20" autocomplete="off"/>
+        </div>
+        <div class="field">
+          <label class="field-label">ROOM CODE</label>
+          <input id="roomCode" type="text" class="field-input code-input" placeholder="ABCD" maxlength="4" autocomplete="off"/>
+        </div>
+        <button id="joinBtn" class="btn btn-secondary btn-lg">
+          <span>🚀</span> JOIN GAME
+        </button>
+      </div>
+    </div>
+
+    <p class="home-footer">Multiplayer · Real-time · 416,000+ words</p>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="/static/js/home.js"></script>
+</body>
+</html>

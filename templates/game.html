@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>WORD BOMB 💣 · {{ room_code }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <link rel="stylesheet" href="/static/css/game.css"/>
+</head>
+<body class="game-page">
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- ── LOBBY ─────────────────────────────────── -->
+  <div class="screen" id="screen-lobby">
+    <header class="g-header">
+      <div class="g-header-logo">💣 WORDBOMB</div>
+      <div class="g-header-spacer"></div>
+      <div class="g-room-badge">ROOM <span class="g-room-code">{{ room_code }}</span></div>
+      <button class="btn btn-ghost btn-sm" id="copyBtn">📋 COPY</button>
+    </header>
+    <div class="lobby-wrap">
+      <div class="lobby-inner">
+        <div class="lobby-hero">
+          <h2 class="lobby-hero-title">WAITING FOR PLAYERS</h2>
+          <p class="lobby-hero-sub">Share the code with your friends</p>
+          <div class="lobby-code-display">{{ room_code }}</div>
+        </div>
+        <div class="player-grid" id="lobbyGrid"></div>
+        <div class="lobby-controls">
+          <div id="hostCtrl" class="hidden">
+            <p class="lobby-status" id="lobbyStatus">Waiting for players…</p>
+            <button class="btn btn-primary btn-xl" id="startBtn" disabled>▶ START GAME</button>
+          </div>
+          <div id="guestCtrl" class="hidden waiting-row">
+            <div class="dot-pulse"><span></span><span></span><span></span></div>
+            <span>Waiting for host to start…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GAME ──────────────────────────────────── -->
+  <div class="screen hidden" id="screen-game">
+    <header class="g-header">
+      <div class="g-header-logo">💣 WORDBOMB</div>
+      <div class="g-header-spacer"></div>
+      <span class="diff-badge diff-1" id="diffBadge">EASY</span>
+      <div class="g-room-badge">ROOM <span class="g-room-code">{{ room_code }}</span></div>
+      <div class="g-round-badge">ROUND <span id="roundNum">1</span></div>
+    </header>
+
+    <div class="game-layout">
+      <aside class="g-sidebar" id="sidebar"></aside>
+
+      <main class="g-arena">
+        <!-- Meta strip -->
+        <div class="arena-meta">
+          <span class="arena-round" id="arenaRound">ROUND 1</span>
+          <span class="arena-divider">·</span>
+          <span class="tier-label" id="arenaTimer" style="color:var(--green)">15s</span>
+          <span class="arena-divider">·</span>
+          <span class="tier-label" id="arenaDiff" style="color:var(--green)">EASY</span>
+        </div>
+
+        <div class="turn-banner" id="turnBanner">…</div>
+
+        <!-- Bomb -->
+        <div class="bomb-wrap">
+          <div class="bomb-fuse" id="bombFuse"></div>
+          <div class="bomb-spark" id="bombSpark"></div>
+          <div class="bomb-shell tier-1" id="bombShell">
+            <div class="bomb-core">
+              <div class="bomb-frag" id="bombFrag">??</div>
+            </div>
+          </div>
+          <svg class="timer-ring" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="5"/>
+            <circle id="timerCircle" cx="100" cy="100" r="92" fill="none" stroke="#00e676" stroke-width="5"
+              stroke-dasharray="578.1" stroke-dashoffset="0" stroke-linecap="round"
+              transform="rotate(-90 100 100)"/>
+          </svg>
+          <div class="timer-secs" id="timerSecs">15</div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+          <div class="input-row">
+            <input id="wordInput" type="text" class="word-input"
+              placeholder="Type a word containing the letters…"
+              autocomplete="off" autocorrect="off" autocapitalize="none"
+              spellcheck="false" disabled/>
+            <button class="submit-btn" id="submitBtn" disabled>SEND <span>⏎</span></button>
+          </div>
+          <div class="input-feedback" id="feedback"></div>
+        </div>
+
+        <!-- Word feed -->
+        <div class="word-feed">
+          <div class="word-feed-label">WORDS USED</div>
+          <div class="word-feed-chips" id="chipList"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── GAME OVER ─────────────────────────────── -->
+  <div class="screen hidden" id="screen-gameover">
+    <div class="go-wrap">
+      <div class="go-bomb">💣</div>
+      <h1 class="go-title">GAME OVER</h1>
+      <div class="go-stats">
+        <div class="go-stat"><strong id="goRounds">—</strong><span>ROUNDS</span></div>
+        <div class="go-stat"><strong id="goWords">—</strong><span>WORDS</span></div>
+      </div>
+      <div class="go-winner">
+        <div class="go-winner-label">WINNER</div>
+        <div class="go-winner-name" id="goWinner">—</div>
+        <div class="go-winner-crown">👑</div>
+      </div>
+      <div class="go-scores" id="goScores"></div>
+      <div class="go-actions">
+        <button class="btn btn-primary btn-md" id="playAgainBtn">PLAY AGAIN</button>
+        <button class="btn btn-ghost   btn-md" id="homeBtn">HOME</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOASTS + MODAL ───────────────────────── -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="modal-overlay" id="nameModal">
+    <div class="modal-card">
+      <div class="modal-bomb">💣</div>
+      <h2 class="modal-title">JOIN ROOM <span class="accent">{{ room_code }}</span></h2>
+      <div class="field" style="width:100%">
+        <label class="field-label">YOUR NAME</label>
+        <input id="modalName" type="text" class="field-input"
+          placeholder="Enter your name…" maxlength="20" autocomplete="off"/>
+      </div>
+      <button class="btn btn-primary btn-lg" id="modalJoinBtn">JOIN GAME</button>
+    </div>
+  </div>
+
+  <script>window.ROOM_CODE = "{{ room_code }}";</script>
+  <script src="/static/js/game.js"></script>
+</body>
+</html>

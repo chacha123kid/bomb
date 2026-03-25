@@ -15,7 +15,6 @@ Open **http://localhost:5000** — share the 4-letter room code with friends.
 - Each turn: type a word containing the **highlighted letters**
 - 12 seconds per turn or you lose a ❤
 - 3 lives — last player standing wins 👑
-- 💡 Hint button available on your turn
 - Long words (7+ letters) earn bonus points
 - All 416,000+ English words accepted
 

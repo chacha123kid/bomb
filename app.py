@@ -10,29 +10,22 @@ print(f"[WordBomb] Loaded {len(WORD_LIST):,} words")
 
 # ── Tiered fragment lists (data-driven from word count analysis) ───────────────
 FRAGMENTS = {
-    # Tier 1 — EASY: ultra-common substrings, appear in 5k+ words
+    # Tier 1 — EASY: 5000+ valid words. Short, super common substrings.
     1: [
         'in','an','re','on','at','is','or','ing','it','to',
         'he','us','me','as','am','be','ate','ess','ee','ent',
         'oo','ion','ine','ous','ist','ble','per','do','so','no',
-        'er','al','ed','es','un','de','im','om','up','over',
-        'man','dis','pre','sub','bio','tri','chi','lo','mo','na',
-        'er','ly','ty','cy','ca','co','pa','po','ra','ro'
     ],
-
-    # Tier 2 — MEDIUM: common but more selective, 1000–5000 words
+    # Tier 2 — MEDIUM: 1000–5000 valid words.
     2: [
         'all','ness','ite','ill','pre','ell','ize','con','able',
         'pro','the','ove','ism','ive','ish','one','ting','dis',
         'ation','ise','ay','int','ome','ide','out','ful','age',
         'are','ake','eal','and','oke','oom','ool','ork','ort',
         'ost','ock','ace','ice','oad','arc','ard','arm','ast',
-        'ect','eld','end','ert','esh','est','ew',
-        'act','apt','alt','ang','eck','eer','eet','igh','old',
-        'oom','ain','ure','ure','ank','ink','ild','ust','ure'
+        'ent','ect','eld','end','ent','ert','esh','est','ew',
     ],
-
-    # Tier 3 — HARD: 300–1000 words, more structural or unusual
+    # Tier 3 — HARD: 300–1000 valid words. Requires thinking.
     3: [
         'une','own','een','ence','sion','old','air','ular','hing',
         'ape','ule','ink','ank','uck','ook','oon','ping','uff',
@@ -40,18 +33,13 @@ FRAGMENTS = {
         'atch','edge','idge','unge','etch','itch','otch','utch',
         'ange','ight','ough','tain','rain','eight','eigh',
         'awn','isk','url','irk','oak','oam',
-        'arch','orn','urst','arth','eign','ooth','urth','irth',
-        'aunt','oint','arch','apse','opse','oise','ause','auth'
     ],
-
-    # Tier 4 — VERY HARD: rare, gnarly, morphology-heavy <300 words
+    # Tier 4 — VERY HARD: 50–300 valid words. Nasty.
     4: [
         'augh','ymph','quil','unct','zzle','rypt','warf',
         'wick','olph','artz','ution','aught','ought','arium',
         'orium','stion','cion','onk','idge','utch','otch',
         'etch','urge','ynth','yrge','uxe','yst',
-        'phyl','gno','xyl','sque','tchl','mnth','pneu',
-        'troph','glyph','rchy','eaux','gne','psch','rhyt','rhiz'
     ],
 }
 
@@ -343,7 +331,6 @@ def sse(room_code, sub_id):
     def generate():
         try:
             yield 'data: {"type":"connected"}\n\n'
-            last_ping = time.time()
             while True:
                 with sse_lock:
                     q = sse_subs.get(room_code, {}).get(sub_id)
@@ -351,10 +338,6 @@ def sse(room_code, sub_id):
                     msgs, q[:] = q[:], []
                 for m in msgs:
                     yield f'data: {m}\n\n'
-                # keepalive comment every 20s to prevent proxy buffering
-                if time.time() - last_ping > 20:
-                    yield ': ping\n\n'
-                    last_ping = time.time()
                 time.sleep(0.04)
         finally:
             with sse_lock:
@@ -363,4 +346,5 @@ def sse(room_code, sub_id):
                     headers={'Cache-Control':'no-cache','X-Accel-Buffering':'no','Connection':'keep-alive'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port, threaded=True, debug=False)
